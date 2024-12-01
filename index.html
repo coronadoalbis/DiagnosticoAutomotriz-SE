@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Diagnóstico Automotriz</title>
+  <style>
+    
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: url('https://empresas.blogthinkbig.com/wp-content/uploads/2023/01/popescu-andrei-alexandru-KQjBXXPRsYM-unsplash.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-attachment: fixed;
+      color: #fff;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      max-width: 600px;
+      width: 90%;
+      margin: 40px auto;
+      text-align: center;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 1em;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: rgb(0, 0, 0);
+      font-size: 1em;
+    }
+
+    input::placeholder {
+      color: #ccc;
+    }
+
+    button {
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background-color: #0066cc;
+      color: white;
+      font-size: 1.1em;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #004c99;
+      transform: scale(1.05);
+    }
+
+    #diagnosticResult {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      font-size: 1.1em;
+      text-align: left;
+      color: #fff;
+      display: none;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    #diagnosticResult.success {
+      border-left: 5px solid #4caf50;
+    }
+
+    #diagnosticResult.error {
+      border-left: 5px solid #f44336;
+    }
+
+    
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      input, select {
+        font-size: 0.9em;
+      }
+
+      button {
+        font-size: 1em;
+      }
+    }
+
+    
+    body, html {
+      height: 100%;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Sistema Experto de Diagnóstico Automotriz</h1>
+  <form id="diagnosticForm">
+    <label for="symptoms">Síntomas Presentados:</label>
+    <select id="symptoms" name="symptoms" required>
+      <option value="">Seleccione los síntomas...</option>
+      <option value="motor_ruido_irregular">Ruido irregular en el motor</option>
+      <option value="motor_perdida_potencia">Pérdida de potencia en el motor</option>
+      <option value="bateria_no_arranca">El vehículo no arranca (problema de batería)</option>
+      <option value="bateria_descarga_rapida">Batería se descarga rápidamente</option>
+      <option value="suspension_ruido_golpeteo">Ruido o golpeteo en la suspensión</option>
+      <option value="suspension_desequilibrio">Desequilibrio o inclinación del vehículo</option>
+      <option value="frenos_pedal_suave">Pedal de freno se siente suave</option>
+      <option value="frenos_ruido_chirrido">Ruido de chirrido al frenar</option>
+      <option value="transmision_slip">Deslizamiento en la transmisión</option>
+      <option value="transmision_dificil_engranar">Dificultad para engranar marchas</option>
+      <option value="escape_humo_negro">Humo negro en el escape</option>
+      <option value="escape_olor_combustible">Olor a combustible en el escape</option>
+      <option value="direccion_dura">Dirección dura o difícil de girar</option>
+    </select>
+
+    <label for="vehicleType">Tipo de Vehículo:</label>
+    <select id="vehicleType" name="vehicleType" required>
+      <option value="">Seleccione el tipo de vehículo...</option>
+      <option value="sedan">Sedán</option>
+      <option value="suv">SUV</option>
+      <option value="hiyundai">Hiyundai</option>
+      <option value="hilux">Hilux</option>
+      <option value="ford">Ford</option> 
+      <option value="kia">Kia</option>
+      <option value="nissan">Nissan</option>
+      <option value="honda">Honda</option>
+    </select>
+
+    <label for="mileage">Kilometraje Actual:</label>
+    <input type="number" id="mileage" name="mileage" required placeholder="Ingrese el kilometraje">
+
+    <button type="submit">Realizar Diagnóstico</button>
+  </form>
+  
+
+  <div id="diagnosticResult"></div>
+</div>
+
+<script>
+  document.getElementById('diagnosticForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const data = {
+      symptoms: document.getElementById('symptoms').value,
+      vehicleType: document.getElementById('vehicleType').value,
+      mileage: document.getElementById('mileage').value,
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/diagnose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      const diagnosticResult = document.getElementById('diagnosticResult');
+
+      diagnosticResult.style.display = 'block';
+
+      if (response.ok) {
+        diagnosticResult.innerText = result.message;
+        diagnosticResult.classList.remove('error');
+        diagnosticResult.classList.add('success');
+      } else {
+        diagnosticResult.innerText = result.message || 'Error en el diagnóstico.';
+        diagnosticResult.classList.remove('success');
+        diagnosticResult.classList.add('error');
+      }
+    } catch (error) {
+      const diagnosticResult = document.getElementById('diagnosticResult');
+      diagnosticResult.style.display = 'block';
+      diagnosticResult.innerText = 'Error al realizar el diagnóstico. Inténtelo más tarde.';
+      diagnosticResult.classList.remove('success');
+      diagnosticResult.classList.add('error');
+    }
+  });
+</script>
+
+</body>
+</html>
